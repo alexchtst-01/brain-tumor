@@ -1,3 +1,5 @@
 .env
 braintumor
-*ipynb
+notebook.ipynb
+raw_data
+test.py
