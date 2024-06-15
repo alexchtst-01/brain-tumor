@@ -12,4 +12,4 @@ This program include 4 files that has it's own task :
 | development process | status |
 |--|--|
 | create the model | 40% |
-| data cleaning | 70% |
+| data cleaning | 100% |
