@@ -1,10 +1,10 @@
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 import os
+from tqdm import tqdm
 
 class DoubleConv(nn.Module):
     def __init__(self, in_channels, out_channels):
@@ -114,15 +114,37 @@ class CustomDataset(Dataset):
         return len(self.images_path)
 
     
-class MyLoader(DataLoader):
-    def __init__(self, dataset):
-        super().__init__(dataset)
-
-    def load(self):
-        return iter(self)
+def trainOneEpoch(trainLoader, model, optimizer, criterion):
+    model.train()
+    train_running_loss = 0.0
+    bpr = tqdm(enumerate(trainLoader), total=len(trainLoader), desc=f"epoch: {eopch} loss: {train_running_loss:.6f}")
+    for idx, data in bpr:
+        optimizer.zero_grad()
+        
+        img = data[0].float() #.to(device)
+        mask = data[1].float() #.to(device)
+        pred = model(img)
+        loss = criterion(pred, mask)
+        
+        train_running_loss += loss.item()
+        bpr.set_description(f"loss: {train_running_loss:.6f}")
+        loss.backward()
+        optimizer.step()
     
-def trainOneEpoch(trainLoader):
-    pass
+    return model, train_running_loss
 
-def testOneEpoch(testLoader):
-    pass
+def testOneEpoch(testLoader, model, criterion, eopch):
+    model.eval()
+    test_running_loss = 0.0
+    with torch.no_grad():
+        bpr = tqdm(enumerate(testLoader), total=len(testLoader), desc=f"epoch: {eopch} loss: {test_running_loss:.6f}")
+        for idx, data in bpr:
+            img = data[0].float() #.to(device)
+            mask = data[1].float() #.to(device)
+            pred = model(img)
+            loss = criterion(pred, mask)
+            
+            test_running_loss += loss.item()
+            bpr.set_description(f"loss: {test_running_loss:.6f}")
+    
+    return model, test_running_loss
