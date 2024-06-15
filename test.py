@@ -1,7 +1,6 @@
-import os 
+from TrainingProperties import UNETModel, CustomDataset, MyLoader
+import torch
 
-root = "./raw_data/test"
-
-for i in os.listdir(root):
-    pth = i.endswith('.json')
-    print(pth)
+x = torch.rand(1, 3, 512, 512)
+model = UNETModel()
+model(x)
