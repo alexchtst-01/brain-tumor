@@ -72,8 +72,3 @@ class CreateAnotationLayers:
         else:
             print("configurasi data tidak sesuai")
 
-# testingMigration = CreateAnotationLayers(src_path="raw_data/test", destination_path="data/test")
-# testingMigration.createAnotation()
-
-# trainingMigration = CreateAnotationLayers(src_path="raw_data/train", destination_path="data/train", anot_key='id')
-# trainingMigration.createAnotation()
