@@ -131,7 +131,7 @@ def trainOneEpoch(trainLoader, model, optimizer, criterion):
         loss.backward()
         optimizer.step()
     
-    return model, train_running_loss
+    return model, train_running_loss / idx
 
 def testOneEpoch(testLoader, model, criterion, eopch):
     model.eval()
@@ -147,4 +147,4 @@ def testOneEpoch(testLoader, model, criterion, eopch):
             test_running_loss += loss.item()
             bpr.set_description(f"loss: {test_running_loss:.6f}")
     
-    return model, test_running_loss
+    return model, test_running_loss / idx
