@@ -6,6 +6,7 @@ This program include 4 files that has it's own task :
 |--|--|
 | `TrainingProperties.py` | to define the deep learning model and create the other requires properties such as function and class |
 | `dataPreprocessing.py` | to clean the data |
+| `train.py` or `train.ipynb` | to train and build the model |
 | `interface.py` | to present the result of the model prediction |
 
 ## Program Plan Development
@@ -13,6 +14,8 @@ This program include 4 files that has it's own task :
 |--|--|
 | create the model | 100% |
 | data cleaning | 100% |
+| train the model in colabs | 0% |
+| interface for testing result | 0% |
 
 ## How to use
 **`dataPreprocessing.py`**
