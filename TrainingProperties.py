@@ -6,6 +6,7 @@ from PIL import Image
 import os
 from tqdm import tqdm
 
+
 class DoubleConv(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -73,7 +74,10 @@ class UNETModel(nn.Module):
         self.up3 = UpSampling(256, 128)
         self.up4 = UpSampling(128, 64)
         
-        self.finalConv = nn.Conv2d(64, num_classes, 1, 1)
+        self.finalConv = nn.Sequential(
+            nn.Conv2d(64, num_classes, 1, 1),
+            nn.Tanh()
+        )
     
     
     def forward(self, x):
@@ -91,13 +95,12 @@ class UNETModel(nn.Module):
         
         return self.finalConv(up4)
 
-
 class CustomDataset(Dataset):
     def __init__(self, root_path):
         super().__init__()
         self.root_path = root_path
-        self.images_path = [f"{root_path}/images/{i}" for i in os.listdir(f"{root_path}/images")]
-        self.masks_path = [f"{root_path}/masks/{i}" for i in os.listdir(f"{root_path}/masks")]
+        self.images_path = sorted([f"{root_path}/images/{i}" for i in os.listdir(f"{root_path}/images")])
+        self.masks_path = sorted([f"{root_path}/masks/{i}" for i in os.listdir(f"{root_path}/masks")])
         
         self.transform = transforms.Compose([
             transforms.Resize((512, 512)),
@@ -113,11 +116,31 @@ class CustomDataset(Dataset):
     def __len__(self):
         return len(self.images_path)
 
+
+    
+    def createMask(self, num_class):
+        if self.__plugAnotations():
+            for segment_properties in tqdm(self.__image_segmentations):
+                img = cv.imread(f"{self.root_path}/{segment_properties[0]['file_name']}")
+                width = segment_properties[0]['width']
+                height = segment_properties[0]['height']
+                
+                class_mask_list = []
+                for n in range(num_class):
+                    class_mask_list.append(np.zeros(shape=(width, height), dtype=np.uint8))
+                    
+                for segment_item in segment_properties:
+                    points = np.array(segment_item['points'])[0].reshape(-1, 2)
+                    points = points.astype(np.int32)
+                    
+                    cv.fillPoly(class_mask_list[segment_item['class']], [points], color=((255, 255, 255)))
+        
+        return np.array(class_mask_list, dtype=np.uint8)
     
 def trainOneEpoch(trainLoader, model, optimizer, criterion):
     model.train()
     train_running_loss = 0.0
-    bpr = tqdm(enumerate(trainLoader), total=len(trainLoader), desc=f"epoch: {eopch} loss: {train_running_loss:.6f}")
+    bpr = tqdm(enumerate(trainLoader), total=len(trainLoader), desc=f"epoch: {1} loss: {train_running_loss:.6f}")
     for idx, data in bpr:
         optimizer.zero_grad()
         
@@ -137,7 +160,7 @@ def testOneEpoch(testLoader, model, criterion, eopch):
     model.eval()
     test_running_loss = 0.0
     with torch.no_grad():
-        bpr = tqdm(enumerate(testLoader), total=len(testLoader), desc=f"epoch: {eopch} loss: {test_running_loss:.6f}")
+        bpr = tqdm(enumerate(testLoader), total=len(testLoader), desc=f"epoch: {1} loss: {test_running_loss:.6f}")
         for idx, data in bpr:
             img = data[0].float() #.to(device)
             mask = data[1].float() #.to(device)
