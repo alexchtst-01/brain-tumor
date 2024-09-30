@@ -96,11 +96,15 @@ class UNETModel(nn.Module):
         return self.finalConv(up4)
 
 class CustomDataset(Dataset):
-    def __init__(self, root_path):
+    def __init__(self, root_path, num="full"):
         super().__init__()
         self.root_path = root_path
-        self.images_path = sorted([f"{root_path}/images/{i}" for i in os.listdir(f"{root_path}/images")])
-        self.masks_path = sorted([f"{root_path}/masks/{i}" for i in os.listdir(f"{root_path}/masks")])
+        if type(num) == int:
+          self.images_path = sorted([f"{root_path}/images/{i}" for i in os.listdir(f"{root_path}/images")])[:num]
+          self.masks_path = sorted([f"{root_path}/masks/{i}" for i in os.listdir(f"{root_path}/masks")])[:num]
+        else:
+          self.images_path = sorted([f"{root_path}/images/{i}" for i in os.listdir(f"{root_path}/images")])
+          self.masks_path = sorted([f"{root_path}/masks/{i}" for i in os.listdir(f"{root_path}/masks")])
         
         self.transform = transforms.Compose([
             transforms.Resize((512, 512)),
@@ -110,13 +114,13 @@ class CustomDataset(Dataset):
     def __getitem__(self, index):
         image = Image.open(self.images_path[index]).convert('RGB')
         mask = Image.open(self.masks_path[index]).convert('L')
+        mask = self.transform(mask)
+        mask = ((mask > 0.1) * 1).float()
         
-        return self.transform(image), self.transform(mask)
+        return self.transform(image), mask
     
     def __len__(self):
         return len(self.images_path)
-
-
     
     def createMask(self, num_class):
         if self.__plugAnotations():
@@ -140,34 +144,34 @@ class CustomDataset(Dataset):
 def trainOneEpoch(trainLoader, model, optimizer, criterion):
     model.train()
     train_running_loss = 0.0
-    bpr = tqdm(enumerate(trainLoader), total=len(trainLoader), desc=f"epoch: {1} loss: {train_running_loss:.6f}")
+    bpr = tqdm(enumerate(trainLoader), total=len(trainLoader), desc=f"loss: {train_running_loss}")
     for idx, data in bpr:
         optimizer.zero_grad()
         
-        img = data[0].float() #.to(device)
-        mask = data[1].float() #.to(device)
+        img = data[0].float().to(device)
+        mask = data[1].float().to(device)
         pred = model(img)
         loss = criterion(pred, mask)
         
         train_running_loss += loss.item()
-        bpr.set_description(f"loss: {train_running_loss:.6f}")
+        bpr.set_description(f"loss: {train_running_loss / (idx + 1):.6f}")
         loss.backward()
         optimizer.step()
     
-    return model, train_running_loss / idx
+    return train_running_loss / len(trainLoader)
 
-def testOneEpoch(testLoader, model, criterion, eopch):
+def testOneEpoch(testLoader, model, criterion, epoch):
     model.eval()
     test_running_loss = 0.0
     with torch.no_grad():
-        bpr = tqdm(enumerate(testLoader), total=len(testLoader), desc=f"epoch: {1} loss: {test_running_loss:.6f}")
+        bpr = tqdm(enumerate(testLoader), total=len(testLoader), desc=f"epoch: {epoch} loss: {test_running_loss}")
         for idx, data in bpr:
-            img = data[0].float() #.to(device)
-            mask = data[1].float() #.to(device)
+            img = data[0].float().to(device)
+            mask = data[1].float().to(device)
             pred = model(img)
             loss = criterion(pred, mask)
             
             test_running_loss += loss.item()
-            bpr.set_description(f"loss: {test_running_loss:.6f}")
+            bpr.set_description(f"loss: {test_running_loss / (idx + 1):.6f}")
     
-    return model, test_running_loss / idx
+    return test_running_loss / len(testLoader)
