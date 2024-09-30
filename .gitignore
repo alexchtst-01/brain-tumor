@@ -1,9 +1,12 @@
 .env
 braintumor
-notebook.ipynb
+# notebook.ipynb
 raw_data
-test.py
+# test.py
 *ipynb
 data
 __pycache__
 notes.txt
+lightning_logs
+my_models
+test_baru
