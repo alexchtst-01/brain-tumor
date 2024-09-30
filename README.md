@@ -14,7 +14,7 @@ This program include 4 files that has it's own task :
 |--|--|
 | create the model | 100% |
 | data cleaning | 100% |
-| train the model in colabs | on-going  |
+| train the model in colabs | maybe-ongoing  |
 | interface for testing result | 100% |
 [train-loss: 0.18, test-loss: 0.19]
 
@@ -75,3 +75,49 @@ make sure that your `dest_data_path` and `src_data_path` is has the following st
         mask=mask,
         pred=pred_tunning
     )
+
+## Final Result
+| Model | Number Epoch | Desc |
+|--|--|--|
+| model1.pt | 2 | using tanh, not using dropout |
+| model2.pt | 2 | using sigmoid, not using dropout |
+| model3.pt | 12 | using sigmoid, using dropout |
+
+**`the best result`** : model3.pt
+
+The TrainLoss and TestLoss
+
+
+![model3.pt loss](imageResult/Loss-Record-Model3.png)
+
+Randomly try to predict 10 Image
+
+![Image Alt](imageResult/30-09/try-predict-113.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-119.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-126.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-144.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-152.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-155.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-30.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-56.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-68.png)
+
+
+![Image Alt](imageResult/30-09/try-predict-70.png)
+
