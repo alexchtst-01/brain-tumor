@@ -3,7 +3,7 @@ braintumor
 # notebook.ipynb
 raw_data
 # test.py
-*ipynb
+# *ipynb
 data
 __pycache__
 notes.txt
