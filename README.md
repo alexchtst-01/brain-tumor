@@ -14,8 +14,12 @@ This program include 4 files that has it's own task :
 |--|--|
 | create the model | 100% |
 | data cleaning | 100% |
-| train the model in colabs | 0% |
-| interface for testing result | 0% |
+| train the model in colabs | on-going  |
+| interface for testing result | 100% |
+[train-loss: 0.18, test-loss: 0.19]
+
+## Process Result
+![Reslut Image](imageResult/result-30-09.png)
 
 ## How to use
 **`dataPreprocessing.py`**
@@ -58,4 +62,16 @@ make sure that your `dest_data_path` and `src_data_path` is has the following st
 	    model, test_loss = testOneEpoch(testLoader, model, criterion)
 	    test_error.append(test_loss)
 	    
-	    # here you can display your train and validation loss after 1 epoch
+	    # here you can display your train and validation loss after 1 epoch using interface
+
+**`interface.py`** 
+
+    img, msk = testSet.__getitem__(idx)
+    pred = model(img.unsqueeze(0).float().to(device))
+    pred_tunning = (pred > 0.3) * 1
+    
+    interface(
+        img=img,
+        mask=mask,
+        pred=pred_tunning
+    )
