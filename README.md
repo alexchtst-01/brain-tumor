@@ -6,7 +6,7 @@ This program include 4 files that has it's own task :
 |--|--|
 | `TrainingProperties.py` | to define the deep learning model and create the other requires properties such as function and class |
 | `dataPreprocessing.py` | to clean the data |
-| `train.py` or `train.ipynb` | to train and build the model |
+| `train.py` or `train.ipynb` or `notebook.ipynb` | to train and build the model |
 | `interface.py` | to present the result of the model prediction |
 
 ## Program Plan Development
@@ -79,8 +79,8 @@ make sure that your `dest_data_path` and `src_data_path` is has the following st
 ## Final Result
 | Model | Number Epoch | Desc |
 |--|--|--|
-| model1.pt | 2 | using tanh, not using dropout |
-| model2.pt | 2 | using sigmoid, not using dropout |
+| model1.pt | 12 | using tanh, not using dropout |
+| model2.pt | 12 | using sigmoid, not using dropout |
 | model3.pt | 12 | using sigmoid, using dropout |
 
 **`the best result`** : model3.pt
